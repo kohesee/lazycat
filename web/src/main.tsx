@@ -19,7 +19,7 @@ import { RULES } from "../../shared/src/rules";
 import catLogo from "../../assets/Pixelated Purple Cat Smile.png";
 import "./style.css";
 
-const API = import.meta.env.VITE_API_URL ?? "http://localhost:8787";
+const API = import.meta.env.VITE_API_URL ?? "https://lazycat-api.onrender.com";
 const explorer = import.meta.env.VITE_EXPLORER_URL ?? "https://testnet.monadvision.com";
 const contract = import.meta.env.VITE_CONTRACT_ADDRESS as `0x${string}` | undefined;
 const abi = parseAbi(["function claim(uint256 amount,uint256 nonce,uint256 day,bytes signature)"]);
@@ -153,7 +153,7 @@ function App() {
         <span className="brand-mark"><img src={catLogo} alt="" /></span>
         <span>LAZYCAT<small>LAZY CRYPTO ATTENTION TOKEN</small></span>
       </a>
-      <div className="nav-links"><a href="#how-it-works">How it works</a><a href="#pit-stop">Pit stop</a></div>
+      <div className="nav-links"><a href="#install">Install</a><a href="#how-it-works">How it works</a><a href="#pit-stop">Pit stop</a></div>
       <div className="nav-actions">
         <span className="network-chip"><i /> MONAD TESTNET</span>
         {isConnected
@@ -192,6 +192,24 @@ function App() {
         <div className="ticker-track"><span>0.05 MON / AD</span><b>✳</b><span>20 ADS / DAY</span><b>✳</b><span>1 MON DAILY CAP</span><b>✳</b><span>MONAD TESTNET</span><b>✳</b><span>0.05 MON / AD</span><b>✳</b><span>20 ADS / DAY</span><b>✳</b><span>1 MON DAILY CAP</span><b>✳</b><span>MONAD TESTNET</span><b>✳</b></div>
       </div>
 
+      <section className="launchpad section-wrap" id="install">
+        <div className="launchpad-copy">
+          <div className="eyebrow"><span>00</span> ZERO-FRICTION SETUP</div>
+          <h2>Install once.<br /><em>Stay in flow.</em></h2>
+          <p>One command adds LazyCat around your everyday coding agent. No new editor. No new dashboard to babysit. Your terminal stays yours.</p>
+          <div className="launch-badges"><span>NODE 22+</span><span>WINDOWS / MAC / LINUX</span><span>MONAD TESTNET</span></div>
+        </div>
+        <div className="install-card">
+          <div className="install-card-top"><span><i className="live-dot" /> QUICKSTART</span><span>01 — 04</span></div>
+          <pre><code>{`npm install -g https://github.com/kohesee/lazycat.git
+lazycat setup
+lazycat wallet 0xYourWallet
+. $PROFILE
+codex`}</code></pre>
+          <div className="install-card-foot"><span>Works with Codex + Claude Code</span><a href="#pit-stop">Try the demo ↗</a></div>
+        </div>
+      </section>
+
       <section className="how section-wrap" id="how-it-works">
         <div className="section-heading"><div><div className="eyebrow"><span>02</span> THE SHORT VERSION</div><h2>Three steps.<br /><em>One smooth ride.</em></h2></div><p>LazyCat keeps rewards small, visible, and verifiable. Your wallet stays yours. Settlement happens on-chain.</p></div>
         <div className="steps-grid">
@@ -226,6 +244,18 @@ function App() {
 
       <section className="truth-strip section-wrap"><div className="truth-icon">◎</div><div><span>THE STRAIGHT-UP VERSION</span><p>No model-output injection. No secret prompt reading. LazyCat rewards focused agent time using visible activity signals, with payout rules enforced by a smart contract.</p></div><a href="https://github.com/kohesee/lazycat" target="_blank" rel="noreferrer">Explore the project <span>↗</span></a></section>
     </main>
+
+    <section className="proof section-wrap">
+      <div className="proof-heading">
+        <div className="eyebrow"><span>04</span> BUILT FOR TRUST</div>
+        <h2>Small rules.<br /><em>Clear receipts.</em></h2>
+      </div>
+      <div className="proof-grid">
+        <article><span className="proof-number">01</span><h3>On-chain when it matters</h3><p>Rewards settle through an EIP-712 voucher and a verified Monad testnet escrow contract.</p><a href={`${explorer}/address/0x5eA4fc4c032bC14BaD00a401dF353400A37e881c`} target="_blank" rel="noreferrer">View contract ↗</a></article>
+        <article><span className="proof-number">02</span><h3>Limits are the feature</h3><p>10-second cooldown, 6 ads per hour, 20 ads per day, and a 1 MON daily ceiling keep the loop sane.</p><a href="#pit-stop">See your limits ↗</a></article>
+        <article><span className="proof-number">03</span><h3>Your work stays private</h3><p>LazyCat does not read prompts, terminal content, model output, or hidden reasoning. Only activity signals.</p><a href="#how-it-works">Read the flow ↗</a></article>
+      </div>
+    </section>
 
     <footer className="footer section-wrap"><a className="brand" href="#top"><span className="brand-mark"><img src={catLogo} alt="" /></span><span>LAZYCAT<small>LAZY CRYPTO ATTENTION TOKEN</small></span></a><span>BUILT ON MONAD TESTNET <b>✳</b> MADE FOR FLOW</span><a href="#top">BACK TO TOP ↑</a></footer>
   </div>;
