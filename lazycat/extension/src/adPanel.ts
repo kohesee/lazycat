@@ -124,13 +124,8 @@ export class AdPanelProvider implements vscode.WebviewViewProvider, vscode.Dispo
     font-weight: 600;
   }
   .meta { font-size: 11px; opacity: 0.75; }
-  table { width: 100%; border-collapse: collapse; }
-  td { padding: 2px 0; vertical-align: top; }
-  td.k { opacity: 0.7; white-space: nowrap; padding-right: 8px; }
-  td.v { font-variant-numeric: tabular-nums; }
-  .ok { color: var(--vscode-testing-iconPassed, #3fb950); }
-  .no { color: var(--vscode-testing-iconFailed, #f85149); }
-  .err { color: var(--vscode-testing-iconFailed, #f85149); margin-top: 8px; font-size: 11px; }
+  .status { font-size: 11px; opacity: 0.75; }
+  .status.live { color: var(--vscode-testing-iconPassed, #3fb950); opacity: 1; }
 </style>
 </head>
 <body>
@@ -142,10 +137,11 @@ export class AdPanelProvider implements vscode.WebviewViewProvider, vscode.Dispo
   </div>
   <div class="meter">
     <div class="ring" id="ring">0s</div>
-    <div class="meta" id="meta">waiting for signals...</div>
+    <div class="meta">
+      <div class="status" id="status">waiting for agent...</div>
+      <div>Sponsored slot · testnet MON</div>
+    </div>
   </div>
-  <table><tbody id="rows"></tbody></table>
-  <div class="err" id="err" hidden></div>
 <script nonce="${nonce}">
   const vscode = acquireVsCodeApi();
 
@@ -167,26 +163,12 @@ export class AdPanelProvider implements vscode.WebviewViewProvider, vscode.Dispo
     },
   ];
 
-  const ROWS = [
-    ['window focused', (s) => s.windowFocused, (s) => String(s.windowFocused)],
-    ['active terminal', (s) => s.activeTerminalName !== null, (s) => s.activeTerminalName ?? 'none'],
-    ['terminal pid', (s) => s.activeTerminalPid !== null, (s) => String(s.activeTerminalPid ?? 'n/a')],
-    ['agent', (s) => s.agentDetected, (s) => s.agentName ?? 'none'],
-    ['in active terminal', (s) => s.agentInActiveTerminal, (s) => String(s.agentInActiveTerminal)],
-    ['agent cpu', (s) => s.agentThinking, (s) => s.agentCpuPercent.toFixed(1) + '% (threshold ' + s.cpuThreshold + '%)'],
-    ['ad panel visible', (s) => s.adPanelVisible, (s) => String(s.adPanelVisible)],
-    ['EARNING', (s) => s.earning, (s) => (s.earning ? 'yes' : 'no')],
-    ['credited', (s) => s.creditedSeconds > 0, (s) => s.creditedSeconds + 's']
-  ];
-
   const adEl = document.getElementById('ad');
   const headlineEl = document.getElementById('ad-headline');
   const bodyEl = document.getElementById('ad-body');
   const ctaEl = document.getElementById('ad-cta');
   const ringEl = document.getElementById('ring');
-  const metaEl = document.getElementById('meta');
-  const rowsEl = document.getElementById('rows');
-  const errEl = document.getElementById('err');
+  const statusEl = document.getElementById('status');
 
   let adIndex = 0;
   function renderAd() {
@@ -203,32 +185,13 @@ export class AdPanelProvider implements vscode.WebviewViewProvider, vscode.Dispo
 
   function render(s) {
     ringEl.textContent = s.streakSeconds + 's';
-    metaEl.textContent =
-      'poll ' + s.pollSeconds + 's · tick ' + s.tickSeconds + 's · agent cpu ' + s.agentCpuPercent.toFixed(1) + '%';
-
     adEl.classList.toggle('dim', !s.earning);
-
-    rowsEl.textContent = '';
-    for (const [label, passes, value] of ROWS) {
-      const tr = document.createElement('tr');
-      const kd = document.createElement('td');
-      kd.className = 'k';
-      kd.textContent = label;
-      const vd = document.createElement('td');
-      vd.className = 'v ' + (passes(s) ? 'ok' : 'no');
-      vd.textContent = value(s);
-      tr.appendChild(kd);
-      tr.appendChild(vd);
-      rowsEl.appendChild(tr);
-    }
-
-    if (s.lastError) {
-      errEl.hidden = false;
-      errEl.textContent = 'signal error: ' + s.lastError;
-    } else {
-      errEl.hidden = true;
-      errEl.textContent = '';
-    }
+    statusEl.textContent = s.earning
+      ? 'Live · earning while ' + (s.agentName ?? 'agent') + ' runs'
+      : s.agentDetected
+        ? 'Agent detected · waiting for focus'
+        : 'Waiting for Claude Code or Codex';
+    statusEl.classList.toggle('live', s.earning);
   }
 
   window.addEventListener('message', (event) => {
