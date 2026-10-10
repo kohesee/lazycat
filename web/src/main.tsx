@@ -16,7 +16,7 @@ import { injected } from "wagmi/connectors";
 import { monadTestnet } from "viem/chains";
 import { parseAbi, formatEther } from "viem";
 import { RULES } from "./rules";
-import catLogo from "../../assets/Pixelated Purple Cat Smile.png";
+const catLogo = "/lazycat-mascot.png";
 import "./style.css";
 
 const API = import.meta.env.VITE_API_URL ?? "https://lazycat-api.onrender.com";
