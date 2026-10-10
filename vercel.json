@@ -1,0 +1,6 @@
+{
+  "buildCommand": "npm --prefix web run build",
+  "outputDirectory": "web/dist",
+  "installCommand": "npm install --ignore-scripts",
+  "framework": "vite"
+}
