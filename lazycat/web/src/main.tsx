@@ -11,7 +11,11 @@ const API = import.meta.env.VITE_API_URL ?? "http://localhost:8787";
 const explorer = import.meta.env.VITE_EXPLORER_URL ?? "https://testnet.monadvision.com";
 const contract = import.meta.env.VITE_CONTRACT_ADDRESS as `0x${string}`;
 const abi = parseAbi(["function claim(uint256 amount,uint256 nonce,uint256 day,bytes signature)"]);
-const config = createConfig({ chains: [monadTestnet], connectors: [injected()], transports: { [monadTestnet.id]: http() } });
+const config = createConfig({
+  chains: [monadTestnet],
+  connectors: [injected()],
+  transports: { [monadTestnet.id]: http(import.meta.env.VITE_RPC_URL ?? "https://testnet-rpc.monad.xyz") },
+});
 
 function App() {
   const { address, isConnected, chainId } = useAccount();

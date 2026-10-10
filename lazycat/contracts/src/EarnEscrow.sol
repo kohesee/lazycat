@@ -35,6 +35,10 @@ contract EarnEscrow is EIP712, Ownable, Pausable, ReentrancyGuard {
 
     receive() external payable {}
 
+    function domainSeparator() external view returns (bytes32) {
+        return _domainSeparatorV4();
+    }
+
     function claim(uint256 amount, uint256 nonce, uint256 day, bytes calldata signature)
         external
         whenNotPaused

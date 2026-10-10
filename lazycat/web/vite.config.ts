@@ -1,3 +1,15 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-export default defineConfig({ plugins: [react()] });
+import { fileURLToPath, URL } from "node:url";
+
+export default defineConfig({
+  plugins: [react()],
+  resolve: {
+    alias: {
+      "cbw-sdk": fileURLToPath(new URL("./src/cbw-sdk-stub.ts", import.meta.url)),
+      "zod/mini": fileURLToPath(
+        new URL("./node_modules/zod/mini/index.js", import.meta.url),
+      ),
+    },
+  },
+});

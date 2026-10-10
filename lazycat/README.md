@@ -16,12 +16,12 @@ Ads do **not** appear inside model output or hidden "thinking". VS Code APIs can
 
 ## Requirements
 
-Node 22+, npm, Foundry, MetaMask, testnet MON. Windows extension debugging needs VS Code. Confirm current Monad RPC, faucet, and explorer details from official Monad docs before deployment; defaults currently use `https://testnet-rpc.monad.xyz` and `https://testnet.monadvision.com`.
+Bun 1.3+, Foundry, MetaMask, testnet MON. Windows extension debugging needs VS Code. Monad testnet RPC currently responds at `https://testnet-rpc.monad.xyz` with chain ID `10143`; confirm current faucet and explorer details from official Monad docs before deployment.
 
 ## Install
 
 ```powershell
-npm install
+bun install
 Copy-Item backend\.env.example backend\.env
 Copy-Item web\.env.example web\.env
 ```
@@ -50,29 +50,40 @@ $env:MONAD_RPC_URL="https://testnet-rpc.monad.xyz"
 forge script script/Deploy.s.sol:Deploy --rpc-url $env:MONAD_RPC_URL --broadcast --legacy
 ```
 
-Fund deployed escrow with testnet MON. Copy address into backend and web env.
+Fund deployed escrow with testnet MON. Copy address into backend `.env` and web `.env`.
+
+Deployment secrets stay local. Never paste private keys into chat, source code, frontend env, or Git:
+
+```powershell
+$env:PRIVATE_KEY="0x<deployer-key>"
+$env:VOUCHER_SIGNER="0x<signer-address>"
+$env:DAILY_CAP="1000000000000000000"
+$env:MAX_ADS_PER_DAY="20"
+$env:MONAD_RPC_URL="https://testnet-rpc.monad.xyz"
+forge script script/Deploy.s.sol:Deploy --rpc-url $env:MONAD_RPC_URL --broadcast --legacy
+```
 
 ## Run
 
 Terminal 1:
 
 ```powershell
-npm run dev:backend
+bun run dev:backend
 ```
 
 Terminal 2:
 
 ```powershell
-npm run dev:web
+bun run dev:web
 ```
 
 Extension:
 
 ```powershell
 cd extension
-npm install
-npm run typecheck
-npm run build
+bun install
+bun run typecheck
+bun run build
 ```
 
 Open `extension` in VS Code, press F5, start `claude` or `codex` in integrated terminal, open Kickbacks sidebar. Status bar displays detection. Keep panel visible for earning. Web app connects wallet and handles claim.

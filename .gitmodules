@@ -1,0 +1,6 @@
+[submodule "lazycat/contracts/lib/forge-std"]
+	path = lazycat/contracts/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
+[submodule "lazycat/contracts/lib/openzeppelin-contracts"]
+	path = lazycat/contracts/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
