@@ -3,14 +3,14 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "kickbacks-monad",
+      "name": "lazycat-monad",
     },
     "backend": {
-      "name": "@kickbacks/backend",
+      "name": "@lazycat/backend",
       "version": "0.0.1",
       "dependencies": {
         "@hono/node-server": "^1.13.0",
-        "@kickbacks/shared": "file:../shared",
+        "@lazycat/shared": "file:../shared",
         "hono": "^4.6.0",
         "viem": "^2.21.0",
         "zod": "3.23.8",
@@ -23,10 +23,10 @@
       },
     },
     "cli": {
-      "name": "@kickbacks/cli",
+      "name": "@lazycat/cli",
       "version": "0.0.1",
       "bin": {
-        "kickbacks": "./dist/cli.js",
+        "lazycat": "./dist/cli.js",
       },
       "dependencies": {
         "node-pty": "^1.1.0",
@@ -39,7 +39,7 @@
       },
     },
     "extension": {
-      "name": "kickbacks-monad",
+      "name": "lazycat-monad",
       "version": "0.0.1",
       "devDependencies": {
         "@types/node": "^20.14.0",
@@ -50,14 +50,14 @@
       },
     },
     "shared": {
-      "name": "@kickbacks/shared",
+      "name": "@lazycat/shared",
       "version": "0.0.1",
     },
     "web": {
-      "name": "@kickbacks/web",
+      "name": "@lazycat/web",
       "version": "0.0.1",
       "dependencies": {
-        "@kickbacks/shared": "file:../shared",
+        "@lazycat/shared": "file:../shared",
         "@vitejs/plugin-react": "^4.3.1",
         "react": "^18.3.1",
         "react-dom": "^18.3.1",
@@ -222,13 +222,13 @@
 
     "@jridgewell/trace-mapping": ["@jridgewell/trace-mapping@0.3.31", "", { "dependencies": { "@jridgewell/resolve-uri": "^3.1.0", "@jridgewell/sourcemap-codec": "^1.4.14" } }, "sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw=="],
 
-    "@kickbacks/backend": ["@kickbacks/backend@workspace:backend"],
+    "@lazycat/backend": ["@lazycat/backend@workspace:backend"],
 
-    "@kickbacks/cli": ["@kickbacks/cli@workspace:cli"],
+    "@lazycat/cli": ["@lazycat/cli@workspace:cli"],
 
-    "@kickbacks/shared": ["@kickbacks/shared@workspace:shared"],
+    "@lazycat/shared": ["@lazycat/shared@workspace:shared"],
 
-    "@kickbacks/web": ["@kickbacks/web@workspace:web"],
+    "@lazycat/web": ["@lazycat/web@workspace:web"],
 
     "@lit-labs/ssr-dom-shim": ["@lit-labs/ssr-dom-shim@1.6.0", "", {}, "sha512-VHb0ALPMTlgKjM6yIxxoQNnpKyUKLD04VzeQdsiXkMqkvYlAHxq9glGLmgbb889/1GsohSOAjvQYoiBppXFqrQ=="],
 
@@ -904,7 +904,7 @@
 
     "keyvaluestorage-interface": ["keyvaluestorage-interface@1.0.0", "", {}, "sha512-8t6Q3TclQ4uZynJY9IGr2+SsIGwK9JHcO6ootkHCGA0CrQCRy+VkouYNO2xicET6b9al7QKzpebNow+gkpCL8g=="],
 
-    "kickbacks-monad": ["kickbacks-monad@workspace:extension"],
+    "lazycat-monad": ["lazycat-monad@workspace:extension"],
 
     "leven": ["leven@3.1.0", "", {}, "sha512-qsda+H8jTaUaN/x5vzW2rzc+8Rw4TAQ/4KjB46IwK5VH+IlVeeeje/EoZRpiXvIqjFgK84QffqPztGI3VBLG1A=="],
 
@@ -1340,11 +1340,7 @@
 
     "@coinbase/wallet-sdk/zustand": ["zustand@5.0.3", "", { "peerDependencies": { "@types/react": ">=18.0.0", "immer": ">=9.0.6", "react": ">=18.0.0", "use-sync-external-store": ">=1.2.0" }, "optionalPeers": ["@types/react", "immer", "react", "use-sync-external-store"] }, "sha512-14fwWQtU3pH4dE0dOpdMiWjddcH+QzKIgk1cl8epwSE7yag43k/AD/m4L6+K7DytAOr9gGBe3/EXj9g7cdostg=="],
 
-    "@kickbacks/backend/@kickbacks/shared": ["@kickbacks/shared@file:shared", {}],
-
-    "@kickbacks/web/@kickbacks/shared": ["@kickbacks/shared@file:shared", {}],
-
-    "@kickbacks/web/zod": ["zod@4.6.5", "", {}, "sha512-v5l/aFXZQeai4awLbOpSoHecE9UiMrnfx75tEXLjNonXVARxQ5mOeipTjROUchszUNCqnE+hqAMujRsRHsut2Q=="],
+    "@lazycat/web/zod": ["zod@4.6.5", "", {}, "sha512-v5l/aFXZQeai4awLbOpSoHecE9UiMrnfx75tEXLjNonXVARxQ5mOeipTjROUchszUNCqnE+hqAMujRsRHsut2Q=="],
 
     "@metamask/eth-json-rpc-provider/@metamask/json-rpc-engine": ["@metamask/json-rpc-engine@7.3.3", "", { "dependencies": { "@metamask/rpc-errors": "^6.2.1", "@metamask/safe-event-emitter": "^3.0.0", "@metamask/utils": "^8.3.0" } }, "sha512-dwZPq8wx9yV3IX2caLi9q9xZBw2XeIoYqdyihDDDpuHVCEiqadJLwqM3zy+uwf6F1QYQ65A8aOMQg1Uw7LMLNg=="],
 
@@ -1450,7 +1446,7 @@
 
     "keytar/node-addon-api": ["node-addon-api@4.3.0", "", {}, "sha512-73sE9+3UaLYYFmDsFZnqCInzPyh3MqIwZO9cw58yIqAZhONrrabrYyYe3TuIqtIiOuTXVhsGau8hcrhhwSsDIQ=="],
 
-    "kickbacks-monad/@types/node": ["@types/node@20.19.43", "", { "dependencies": { "undici-types": "~6.21.0" } }, "sha512-6oYBAi5ikg4Pl+kGsoYtawUMBT2zZMCvPNF7pVLnHZfd1zf38DRiWn/gT01RYCdUqkv7Fhr+C9ot4/tb+2sVvA=="],
+    "lazycat-monad/@types/node": ["@types/node@20.19.43", "", { "dependencies": { "undici-types": "~6.21.0" } }, "sha512-6oYBAi5ikg4Pl+kGsoYtawUMBT2zZMCvPNF7pVLnHZfd1zf38DRiWn/gT01RYCdUqkv7Fhr+C9ot4/tb+2sVvA=="],
 
     "obj-multiplex/readable-stream": ["readable-stream@2.3.8", "", { "dependencies": { "core-util-is": "~1.0.0", "inherits": "~2.0.3", "isarray": "~1.0.0", "process-nextick-args": "~2.0.0", "safe-buffer": "~5.1.1", "string_decoder": "~1.1.1", "util-deprecate": "~1.0.1" } }, "sha512-8p0AUk4XODgIewSi0l8Epjs+EVnWiK7NoDIEGU0HhE7+ZyY8D1IMY7odu5lRrFXGg71L15KG8QrPmum45RTtdA=="],
 

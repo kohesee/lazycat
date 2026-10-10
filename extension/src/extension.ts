@@ -45,7 +45,7 @@ export function activate(context: vscode.ExtensionContext): void {
       });
       await vscode.window.showTextDocument(document, { preview: true });
     }),
-    vscode.commands.registerCommand('kickbacks.openAdBesideAgent', () => {
+    vscode.commands.registerCommand('lazycat.openAdBesideAgent', () => {
       adPanel.openEditorPanel();
     }),
   );

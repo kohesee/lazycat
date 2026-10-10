@@ -12,7 +12,7 @@ function makeNonce(): string {
 
 export class AdPanelProvider implements vscode.WebviewViewProvider, vscode.Disposable {
   static readonly viewId = 'monadwatch.signals';
-  static readonly panelViewId = 'kickbacks.agentRewards';
+  static readonly panelViewId = 'lazycat.agentRewards';
 
   private readonly views = new Set<vscode.WebviewView>();
   private readonly subscription: vscode.Disposable;
@@ -34,8 +34,8 @@ export class AdPanelProvider implements vscode.WebviewViewProvider, vscode.Dispo
 
   openEditorPanel(): vscode.WebviewPanel {
     const panel = vscode.window.createWebviewPanel(
-      'kickbacks.agentAd',
-      'Sponsored Agent Slot',
+      'lazycat.agentAd',
+      'LazyCat Agent Slot',
       vscode.ViewColumn.Beside,
       { enableScripts: true, retainContextWhenHidden: true },
     );
@@ -114,7 +114,7 @@ export class AdPanelProvider implements vscode.WebviewViewProvider, vscode.Dispo
 <meta charset="UTF-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}';">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MonadWatch</title>
+<title>LazyCat</title>
 <style>
   body {
     margin: 0;
@@ -129,6 +129,25 @@ export class AdPanelProvider implements vscode.WebviewViewProvider, vscode.Dispo
     letter-spacing: 0.08em;
     opacity: 0.6;
     margin-bottom: 6px;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    color: #d9ff62;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+  }
+  .brand-mark {
+    display: inline-grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border: 1px solid #d9ff62;
+    border-radius: 7px 3px 7px 3px;
+    transform: rotate(-8deg);
+    font-size: 12px;
   }
   .ad {
     border: 1px solid var(--vscode-panel-border, rgba(128,128,128,0.35));
@@ -157,10 +176,11 @@ export class AdPanelProvider implements vscode.WebviewViewProvider, vscode.Dispo
 </style>
 </head>
 <body>
+  <div class="brand"><span class="brand-mark">◈</span> LAZYCAT</div>
   <div class="tag">SPONSORED · MONAD TESTNET DEMO</div>
   <div class="ad" id="ad">
-    <div class="headline" id="ad-headline">Monad Blitz</div>
-    <div class="body" id="ad-body">Ship your first contract on Monad testnet.</div>
+    <div class="headline" id="ad-headline">Cursor · The AI Code Editor</div>
+    <div class="body" id="ad-body">Turn ideas into working software faster.</div>
     <div class="cta" id="ad-cta">0.05 MON per ad · 1 MON daily cap</div>
   </div>
   <div class="meter">
@@ -175,19 +195,29 @@ export class AdPanelProvider implements vscode.WebviewViewProvider, vscode.Dispo
 
   const ADS = [
     {
-      headline: 'Monad Blitz',
-      body: 'Ship your first contract on Monad testnet.',
-      cta: '0.05 MON per ad · 1 MON daily cap',
+      headline: '◈ Cursor · The AI Code Editor',
+      body: 'Turn ideas into working software faster.',
+      cta: 'Explore your next build · Demo placement',
     },
     {
-      headline: 'Testnet MON, zero risk',
-      body: 'Earn while your coding agent thinks. Claim on-chain.',
-      cta: 'Sponsored slot 2 of 3',
+      headline: '◇ Sentry · Ship with confidence',
+      body: 'Catch issues before users do.',
+      cta: 'Find the signal in every stack trace · Demo placement',
     },
     {
-      headline: 'Thinking time pays',
-      body: 'Attention verified by focus and process signal.',
-      cta: 'Sponsored slot 3 of 3',
+      headline: '✦ Supabase · Your backend',
+      body: 'Postgres, auth, storage, ready to build.',
+      cta: 'Start with a database that feels effortless · Demo placement',
+    },
+    {
+      headline: '◎ Vercel · Ship it',
+      body: 'Deploy frontend changes at the speed of git.',
+      cta: 'From commit to globally fast · Demo placement',
+    },
+    {
+      headline: '▣ Raycast · Command your tools',
+      body: 'Shortcuts, workflows, and your dev life in one place.',
+      cta: 'Make every action feel instant · Demo placement',
     },
   ];
 

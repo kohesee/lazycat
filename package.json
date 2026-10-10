@@ -1,8 +1,8 @@
 {
-  "name": "kickbacks-monad",
+  "name": "lazycat-monad",
   "version": "0.0.1",
   "private": true,
-  "description": "Kickbacks - attention-gated testnet MON rewards for AI coding agent thinking time.",
+  "description": "LazyCat - attention-gated testnet MON rewards for AI coding agent thinking time.",
   "workspaces": [
     "shared",
     "backend",
@@ -18,6 +18,7 @@
     "build:extension": "bun run --cwd extension build",
     "build:cli": "bun run --cwd cli build",
     "run:cli": "node cli/dist/cli.js",
+    "pack:cli": "npm pack ./cli",
     "typecheck": "bun run --cwd backend typecheck && bun run --cwd web typecheck && bun run --cwd extension typecheck && bun run --cwd cli typecheck",
     "replay-attack": "bunx tsx scripts/replay-attack.ts"
   },

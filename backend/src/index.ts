@@ -15,7 +15,7 @@ const env = (key: string, fallback?: string) => {
   return value;
 };
 const PORT = Number(env("PORT", "8787"));
-const DB_PATH = env("DB_PATH", "./data/kickbacks.db");
+const DB_PATH = env("DB_PATH", "./data/lazycat.db");
 const CONTRACT_ADDRESS = env("CONTRACT_ADDRESS");
 const CHAIN_ID = Number(env("CHAIN_ID", String(RULES.chainId)));
 const DAILY_CAP = BigInt(env("DAILY_CAP_WEI", RULES.dailyCapWei.toString()));
@@ -133,4 +133,4 @@ app.get("/admin/fraud-log", (c) => {
 });
 
 serve({ fetch: app.fetch, port: PORT });
-console.log(`Kickbacks backend listening on http://localhost:${PORT}`);
+console.log(`LazyCat backend listening on http://localhost:${PORT}`);

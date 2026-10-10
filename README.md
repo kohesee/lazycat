@@ -1,6 +1,8 @@
-# LazyCat: Lazy Crypto Attention Token
+# LazyCat: Attention Rewards for Monad
 
-Testnet-only hackathon demo. VS Code extension displays sponsored slots beside Claude Code, Codex, Gemini CLI, aider, and other terminal agents. Focused agent time earns capped testnet MON. User claims through an EIP-712 voucher and `EarnEscrow`; contract is payout authority.
+Testnet-only hackathon demo. VS Code extension displays sponsor-style devtool placements beside Claude Code, Codex, Gemini CLI, aider, and other terminal agents. Focused agent time earns capped testnet MON. User claims through an EIP-712 voucher and `EarnEscrow`; contract is payout authority.
+
+Included Cursor, Sentry, Supabase, Vercel, and Raycast creatives are original demo placements, not paid endorsements or partnership claims.
 
 ## Honest product boundary
 
@@ -86,7 +88,7 @@ bun run typecheck
 bun run build
 ```
 
-Open `extension` in VS Code, press F5, start `claude` or `codex` in integrated terminal, open Kickbacks sidebar. Status bar displays detection. Keep panel visible for earning. Web app connects wallet and handles claim.
+Open `extension` in VS Code, press F5, start `claude` or `codex` in integrated terminal, open LazyCat sidebar. Status bar displays detection. Keep panel visible for earning. Web app connects wallet and handles claim.
 
 ## CLI TUI prototype
 
@@ -109,15 +111,69 @@ node dist/cli.js codex --help
 Optional wallet heartbeat:
 
 ```powershell
-$env:KICKBACKS_WALLET="0xYourWallet"
+$env:LAZY_CAT_WALLET="0xYourWallet"
 node dist/cli.js codex
 ```
+
+### One-time CLI setup
+
+The CLI can permanently wrap normal `codex` and `claude` commands in PowerShell. It adds a marked block to the PowerShell profile; it does not replace binaries or read prompts.
+
+From this repository:
+
+```powershell
+cd D:\Study\hackathons\monadBlitz2\lazycat
+bun run --cwd cli build
+node cli\dist\cli.js setup
+node cli\dist\cli.js wallet 0xYourWallet
+node cli\dist\cli.js doctor
+. $PROFILE
+```
+
+After setup, normal commands automatically show LazyCat:
+
+```powershell
+codex
+claude
+```
+
+Run the original CLI without the ad wrapper:
+
+```powershell
+lazycat passthrough codex
+lazycat passthrough claude
+```
+
+Disable or re-enable automatic wrapping:
+
+```powershell
+lazycat disable
+lazycat enable
+```
+
+For the published package, the same flow starts with:
+
+```powershell
+npm install -g lazycat-cli
+lazycat setup
+lazycat wallet 0xYourWallet
+```
+
+`lazycat setup` asks for consent before changing the profile. `lazycat doctor` checks installed agents, wallet configuration, backend URL, and profile state.
+
+Real MON payouts require a hosted LazyCat API URL. Set it once after install:
+
+```powershell
+lazycat api https://your-lazycat-api.example.com
+```
+
+The npm package cannot contain the voucher signer private key. Running only the CLI without a hosted API still shows ads, but cannot credit real MON.
 
 This is terminal rendering, not model-output injection. ANSI/TUI redraw behavior varies by agent and terminal. If banner flickers, use the VS Code `Agent Rewards` editor-side companion view instead:
 
 ```text
 Ctrl+Shift+P
-Kickbacks: Open Ad Beside Agent
+LazyCat: Open Ad Beside Agent
 ```
 
 For Copilot/Codex VS Code webviews, editor-side companion is closest supported integration; external extensions cannot write inside another extension's private webview.

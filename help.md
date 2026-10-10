@@ -1,7 +1,7 @@
 
 ---
 
-# Build Brief: Kickbacks Testnet Earn Loop (Monad Hackathon)
+# Build Brief: LazyCat Testnet Earn Loop (Monad Hackathon)
 
 ## Goal
 Build a testnet-only demo where a user views a static sponsored banner, earns capped testnet MON credits per day, and claims them on Monad testnet through a signed voucher. This is a hackathon prototype. Do not build live ad serving, LLM exchange, GPU provider network, mainnet logic, or token economics.
@@ -17,7 +17,7 @@ Build a testnet-only demo where a user views a static sponsored banner, earns ca
 
 ### 1. Repo structure
 ```
-kickbacks-testnet/
+lazycat/
   contracts/      Foundry project
   backend/        TypeScript, Hono, SQLite
   web/            Vite + React, wagmi + viem

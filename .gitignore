@@ -8,6 +8,7 @@ data/
 *.db
 *.db-shm
 *.db-wal
+*.tgz
 contracts/lib/
 contracts/cache/
 contracts/broadcast/

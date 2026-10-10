@@ -1,13 +1,26 @@
 {
-  "name": "@kickbacks/cli",
+  "name": "lazycat-cli",
   "version": "0.0.1",
-  "private": true,
+  "private": false,
   "type": "module",
+  "description": "LazyCat PTY wrapper and one-time shell setup for AI coding CLIs.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kohesee/lazycat.git",
+    "directory": "cli"
+  },
+  "homepage": "https://github.com/kohesee/lazycat",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": ["dist", "bin"],
   "bin": {
-    "kickbacks": "./dist/cli.js"
+    "lazycat": "./bin/lazycat.js"
   },
   "scripts": {
     "build": "tsup src/cli.ts --format esm --platform node --target node20 --out-dir dist",
+    "prepack": "npm run build",
+    "pack:local": "npm pack",
     "run": "node dist/cli.js",
     "dev": "tsx src/cli.ts",
     "typecheck": "tsc --noEmit"

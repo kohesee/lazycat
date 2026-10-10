@@ -1,6 +1,6 @@
 {
-  "name": "kickbacks-monad",
-  "displayName": "Kickbacks for Monad",
+  "name": "lazycat-monad",
+  "displayName": "LazyCat for Monad",
   "description": "Earn testnet MON from sponsored slots while your coding agent runs. No prompts read.",
   "version": "0.0.1",
   "private": true,
@@ -22,8 +22,8 @@
         "title": "MonadWatch: Probe Process Tree"
       },
       {
-        "command": "kickbacks.openAdBesideAgent",
-        "title": "Kickbacks: Open Ad Beside Agent"
+        "command": "lazycat.openAdBesideAgent",
+        "title": "LazyCat: Open Ad Beside Agent"
       }
     ],
     "viewsContainers": {
@@ -36,7 +36,7 @@
       ],
       "panel": [
         {
-          "id": "kickbacks-agent-panel",
+          "id": "lazycat-agent-panel",
           "title": "Agent Rewards",
           "icon": "media/icon.svg"
         }
@@ -50,10 +50,10 @@
           "name": "Ad Slot"
         }
       ],
-      "kickbacks-agent-panel": [
+      "lazycat-agent-panel": [
         {
           "type": "webview",
-          "id": "kickbacks.agentRewards",
+          "id": "lazycat.agentRewards",
           "name": "Codex / Claude Rewards"
         }
       ]
