@@ -45,6 +45,9 @@ export function activate(context: vscode.ExtensionContext): void {
       });
       await vscode.window.showTextDocument(document, { preview: true });
     }),
+    vscode.commands.registerCommand('kickbacks.openAdBesideAgent', () => {
+      adPanel.openEditorPanel();
+    }),
   );
 
   tracker.start();

@@ -20,6 +20,10 @@
       {
         "command": "monadwatch.probeProcesses",
         "title": "MonadWatch: Probe Process Tree"
+      },
+      {
+        "command": "kickbacks.openAdBesideAgent",
+        "title": "Kickbacks: Open Ad Beside Agent"
       }
     ],
     "viewsContainers": {

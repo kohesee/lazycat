@@ -88,6 +88,40 @@ bun run build
 
 Open `extension` in VS Code, press F5, start `claude` or `codex` in integrated terminal, open Kickbacks sidebar. Status bar displays detection. Keep panel visible for earning. Web app connects wallet and handles claim.
 
+## CLI TUI prototype
+
+For Claude Code, Codex CLI, and similar terminal agents, use the PTY wrapper. It launches the real agent, forwards keyboard input, preserves its TUI, and paints a rotating sponsored line on the terminal's bottom row:
+
+```powershell
+cd cli
+bun install
+bun run build
+bun run dist/cli.js codex
+```
+
+Examples:
+
+```powershell
+bun run dist/cli.js claude
+bun run dist/cli.js codex --help
+```
+
+Optional wallet heartbeat:
+
+```powershell
+$env:KICKBACKS_WALLET="0xYourWallet"
+bun run dist/cli.js codex
+```
+
+This is terminal rendering, not model-output injection. ANSI/TUI redraw behavior varies by agent and terminal. If banner flickers, use the VS Code `Agent Rewards` editor-side companion view instead:
+
+```text
+Ctrl+Shift+P
+Kickbacks: Open Ad Beside Agent
+```
+
+For Copilot/Codex VS Code webviews, editor-side companion is closest supported integration; external extensions cannot write inside another extension's private webview.
+
 ## Security notes
 
 Contract uses EIP-712 domain separation, signer recovery, per-wallet nonce replay protection, immutable daily value/ad caps, pause, reentrancy guard, and pull payout. Backend uses prepared SQLite statements, wallet validation, rate limits, fraud log, CORS allowlist, and timing-safe admin token comparison. Backend pending balances need reconciliation if a user rejects a transaction; for hackathon demo, restart with a new day or manually reconcile DB before reuse.

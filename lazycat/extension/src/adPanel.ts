@@ -32,6 +32,30 @@ export class AdPanelProvider implements vscode.WebviewViewProvider, vscode.Dispo
     }
   }
 
+  openEditorPanel(): vscode.WebviewPanel {
+    const panel = vscode.window.createWebviewPanel(
+      'kickbacks.agentAd',
+      'Sponsored Agent Slot',
+      vscode.ViewColumn.Beside,
+      { enableScripts: true, retainContextWhenHidden: true },
+    );
+    panel.webview.html = this.renderHtml(panel.webview, makeNonce());
+    const disposable = [
+      panel.onDidChangeViewState(() => this.tracker.setAdPanelVisible(panel.visible)),
+      panel.onDidDispose(() => {
+        this.tracker.setAdPanelVisible(false);
+      }),
+      panel.webview.onDidReceiveMessage((message: { type?: string }) => {
+        if (message.type === 'ready') {
+          this.postTo(panel.webview, this.tracker.getState());
+        }
+      }),
+    ];
+    panel.onDidDispose(() => disposable.forEach((item) => item.dispose()));
+    this.tracker.setAdPanelVisible(true);
+    return panel;
+  }
+
   resolveWebviewView(
     webviewView: vscode.WebviewView,
     _context: vscode.WebviewViewResolveContext,
@@ -75,6 +99,10 @@ export class AdPanelProvider implements vscode.WebviewViewProvider, vscode.Dispo
     for (const view of this.views) {
       void view.webview.postMessage({ type: 'signals', payload: signals });
     }
+  }
+
+  private postTo(webview: vscode.Webview, signals: Signals): void {
+    void webview.postMessage({ type: 'signals', payload: signals });
   }
 
   private renderHtml(webview: vscode.Webview, nonce: string): string {
