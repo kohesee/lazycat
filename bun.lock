@@ -4,6 +4,9 @@
   "workspaces": {
     "": {
       "name": "lazycat-monad",
+      "dependencies": {
+        "node-pty": "^1.1.0",
+      },
     },
     "backend": {
       "name": "@lazycat/backend",
@@ -23,10 +26,10 @@
       },
     },
     "cli": {
-      "name": "@lazycat/cli",
+      "name": "lazycat-cli",
       "version": "0.0.1",
       "bin": {
-        "lazycat": "./dist/cli.js",
+        "lazycat": "./bin/lazycat.js",
       },
       "dependencies": {
         "node-pty": "^1.1.0",
@@ -58,6 +61,7 @@
       "version": "0.0.1",
       "dependencies": {
         "@lazycat/shared": "file:../shared",
+        "@tanstack/react-query": "^5.104.1",
         "@vitejs/plugin-react": "^4.3.1",
         "react": "^18.3.1",
         "react-dom": "^18.3.1",
@@ -223,8 +227,6 @@
     "@jridgewell/trace-mapping": ["@jridgewell/trace-mapping@0.3.31", "", { "dependencies": { "@jridgewell/resolve-uri": "^3.1.0", "@jridgewell/sourcemap-codec": "^1.4.14" } }, "sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw=="],
 
     "@lazycat/backend": ["@lazycat/backend@workspace:backend"],
-
-    "@lazycat/cli": ["@lazycat/cli@workspace:cli"],
 
     "@lazycat/shared": ["@lazycat/shared@workspace:shared"],
 
@@ -904,6 +906,8 @@
 
     "keyvaluestorage-interface": ["keyvaluestorage-interface@1.0.0", "", {}, "sha512-8t6Q3TclQ4uZynJY9IGr2+SsIGwK9JHcO6ootkHCGA0CrQCRy+VkouYNO2xicET6b9al7QKzpebNow+gkpCL8g=="],
 
+    "lazycat-cli": ["lazycat-cli@workspace:cli"],
+
     "lazycat-monad": ["lazycat-monad@workspace:extension"],
 
     "leven": ["leven@3.1.0", "", {}, "sha512-qsda+H8jTaUaN/x5vzW2rzc+8Rw4TAQ/4KjB46IwK5VH+IlVeeeje/EoZRpiXvIqjFgK84QffqPztGI3VBLG1A=="],
@@ -1339,6 +1343,10 @@
     "@coinbase/wallet-sdk/ox": ["ox@0.6.9", "", { "dependencies": { "@adraffy/ens-normalize": "^1.10.1", "@noble/curves": "^1.6.0", "@noble/hashes": "^1.5.0", "@scure/bip32": "^1.5.0", "@scure/bip39": "^1.4.0", "abitype": "^1.0.6", "eventemitter3": "5.0.1" }, "peerDependencies": { "typescript": ">=5.4.0" }, "optionalPeers": ["typescript"] }, "sha512-wi5ShvzE4eOcTwQVsIPdFr+8ycyX+5le/96iAJutaZAvCes1J0+RvpEPg5QDPDiaR0XQQAvZVl7AwqQcINuUug=="],
 
     "@coinbase/wallet-sdk/zustand": ["zustand@5.0.3", "", { "peerDependencies": { "@types/react": ">=18.0.0", "immer": ">=9.0.6", "react": ">=18.0.0", "use-sync-external-store": ">=1.2.0" }, "optionalPeers": ["@types/react", "immer", "react", "use-sync-external-store"] }, "sha512-14fwWQtU3pH4dE0dOpdMiWjddcH+QzKIgk1cl8epwSE7yag43k/AD/m4L6+K7DytAOr9gGBe3/EXj9g7cdostg=="],
+
+    "@lazycat/backend/@lazycat/shared": ["@lazycat/shared@file:shared", {}],
+
+    "@lazycat/web/@lazycat/shared": ["@lazycat/shared@file:shared", {}],
 
     "@lazycat/web/zod": ["zod@4.6.5", "", {}, "sha512-v5l/aFXZQeai4awLbOpSoHecE9UiMrnfx75tEXLjNonXVARxQ5mOeipTjROUchszUNCqnE+hqAMujRsRHsut2Q=="],
 

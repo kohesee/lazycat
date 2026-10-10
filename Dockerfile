@@ -2,14 +2,12 @@ FROM oven/bun:1.3
 
 WORKDIR /app
 
-COPY package.json bun.lock ./
 COPY shared/package.json shared/package.json
 COPY backend/package.json backend/package.json
-COPY web/package.json web/package.json
-COPY extension/package.json extension/package.json
-COPY cli/package.json cli/package.json
-RUN bun install --frozen-lockfile
+WORKDIR /app/backend
+RUN bun install --production --ignore-scripts
 
+WORKDIR /app
 COPY shared shared
 COPY backend backend
 
