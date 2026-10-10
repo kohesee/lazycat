@@ -7,9 +7,6 @@ export default defineConfig({
   resolve: {
     alias: {
       "cbw-sdk": fileURLToPath(new URL("./src/cbw-sdk-stub.ts", import.meta.url)),
-      "zod/mini": fileURLToPath(
-        new URL("./node_modules/zod/mini/index.js", import.meta.url),
-      ),
     },
   },
 });
