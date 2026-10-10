@@ -1,0 +1,35 @@
+services:
+  - type: web
+    name: lazycat-api
+    runtime: docker
+    plan: starter
+    healthCheckPath: /health
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    disk:
+      name: lazycat-data
+      mountPath: /data
+      sizeGB: 1
+    envVars:
+      - key: PORT
+        value: "8787"
+      - key: DB_PATH
+        value: /data/lazycat.db
+      - key: CHAIN_ID
+        value: "10143"
+      - key: CONTRACT_ADDRESS
+        value: 0x5eA4fc4c032bC14BaD00a401dF353400A37e881c
+      - key: DAILY_CAP_WEI
+        value: "1000000000000000000"
+      - key: REWARD_PER_AD_WEI
+        value: "50000000000000000"
+      - key: MAX_ADS_PER_DAY
+        value: "20"
+      - key: MAX_ADS_PER_HOUR
+        value: "6"
+      - key: ALLOWED_ORIGIN
+        sync: false
+      - key: VOUCHER_SIGNER_KEY
+        sync: false
+      - key: ADMIN_TOKEN
+        generateValue: true

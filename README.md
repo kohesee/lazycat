@@ -201,6 +201,35 @@ LAZYCAT · earning API online · 0.05 MON earned · 1 ads · claim: https://...
 
 The repository package defaults to `http://localhost:8787` because no public API is bundled. To meet the true “install once, no backend” demo promise, deploy the backend and web app and pass those public URLs during setup. Never expose `VOUCHER_SIGNER_KEY` in this package.
 
+### Fast API hosting on Render
+
+This repository includes [`render.yaml`](./render.yaml) and [`Dockerfile`](./Dockerfile). Render must use Docker because backend uses `bun:sqlite`; do not select a native Node runtime.
+
+1. Push repository to GitHub.
+2. Open Render, choose **New + > Blueprint**, select `kohesee/lazycat`, and apply `render.yaml`.
+3. Set `ALLOWED_ORIGIN` to your deployed web URL, for example `https://lazycat-web.onrender.com`.
+4. Set `VOUCHER_SIGNER_KEY` to the private key whose address is the deployed contract signer. Paste it only in Render's secret environment variable field.
+5. Deploy. Test:
+
+```powershell
+curl https://YOUR-API.onrender.com/health
+```
+
+Expected response:
+
+```json
+{"ok":true,"chainId":10143}
+```
+
+Then configure clients:
+
+```powershell
+lazycat api https://YOUR-API.onrender.com
+lazycat web https://YOUR-WEB.onrender.com/#pit-stop
+```
+
+Render's free service can sleep and is unsuitable for a live earning demo. The included `starter` plan keeps service responsive and the persistent disk keeps SQLite data. Never put `VOUCHER_SIGNER_KEY` in GitHub, web env, CLI config, or browser code.
+
 ### Judging evidence
 
 - **Monad usage:** deployed `EarnEscrow` contract on Monad testnet, chain ID `10143`; voucher claims emit on-chain `Claimed` events.
