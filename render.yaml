@@ -2,19 +2,15 @@ services:
   - type: web
     name: lazycat-api
     runtime: docker
-    plan: starter
+    plan: free
     healthCheckPath: /health
     dockerfilePath: ./Dockerfile
     dockerContext: .
-    disk:
-      name: lazycat-data
-      mountPath: /data
-      sizeGB: 1
     envVars:
       - key: PORT
         value: "8787"
       - key: DB_PATH
-        value: /data/lazycat.db
+        value: /tmp/lazycat.db
       - key: CHAIN_ID
         value: "10143"
       - key: CONTRACT_ADDRESS

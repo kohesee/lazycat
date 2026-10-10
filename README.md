@@ -228,7 +228,7 @@ lazycat api https://YOUR-API.onrender.com
 lazycat web https://YOUR-WEB.onrender.com/#pit-stop
 ```
 
-Render's free service can sleep and is unsuitable for a live earning demo. The included `starter` plan keeps service responsive and the persistent disk keeps SQLite data. Never put `VOUCHER_SIGNER_KEY` in GitHub, web env, CLI config, or browser code.
+Render's free service can sleep and has ephemeral storage, so SQLite counters can reset after restart. This is acceptable for a short hackathon demo, not production. Never put `VOUCHER_SIGNER_KEY` in GitHub, web env, CLI config, or browser code.
 
 ### Judging evidence
 
