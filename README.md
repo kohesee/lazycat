@@ -161,13 +161,23 @@ lazycat wallet 0xYourWallet
 
 `lazycat setup` asks for consent before changing the profile. `lazycat doctor` checks installed agents, wallet configuration, backend URL, and profile state.
 
-Real MON payouts require a hosted LazyCat API URL. Set it once after install:
+GitHub source install now uses the deployed demo API by default:
+
+```powershell
+npm install -g https://github.com/kohesee/lazycat.git
+lazycat setup
+lazycat wallet 0xYourWallet
+. $PROFILE
+codex
+```
+
+No backend command is needed. The CLI sends heartbeats to `https://lazycat-api.onrender.com`, already deployed on Monad testnet. Override API only when using your own deployment:
 
 ```powershell
 lazycat api https://your-lazycat-api.example.com
 ```
 
-The npm package cannot contain the voucher signer private key. Running only the CLI without a hosted API still shows ads, but cannot credit real MON.
+The npm/GitHub package never contains the voucher signer private key. It stores only wallet address and public API URL.
 
 ### GitHub one-stop install
 

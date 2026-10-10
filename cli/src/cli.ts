@@ -20,6 +20,7 @@ const profilePath = process.platform === "win32"
   : path.join(os.homedir(), ".profile");
 const profileStart = "# >>> lazycat auto-wrapper >>>";
 const profileEnd = "# <<< lazycat auto-wrapper <<<";
+const defaultApiUrl = "https://lazycat-api.onrender.com";
 
 function readConfig(): Config {
   if (!existsSync(configPath)) return {};
@@ -69,7 +70,7 @@ function formatMon(wei: string | number | undefined): string {
 
 async function runAgent(agent: Agent, args: string[]): Promise<never> {
   const config = readConfig();
-  const apiUrl = process.env.LAZY_CAT_API_URL ?? config.apiUrl ?? "http://localhost:8787";
+  const apiUrl = process.env.LAZY_CAT_API_URL ?? config.apiUrl ?? defaultApiUrl;
   const wallet = process.env.LAZY_CAT_WALLET ?? config.wallet;
   const webUrl = process.env.LAZY_CAT_WEB_URL ?? config.webUrl ?? "http://localhost:5173/#pit-stop";
   const intervalMs = 30_000;
@@ -247,7 +248,7 @@ function doctor(): void {
   const config = readConfig();
   console.log(`Config: ${configPath} ${existsSync(configPath) ? "OK" : "not configured"}`);
   console.log(`Wallet: ${config.wallet ? "configured" : "missing (run lazycat wallet <address>)"}`);
-  console.log(`Backend: ${config.apiUrl ?? "http://localhost:8787"}`);
+  console.log(`Backend: ${config.apiUrl ?? defaultApiUrl}`);
   for (const agent of ["codex", "claude"] as const) {
     try {
       execFileSync(agent, ["--version"], { stdio: "pipe", windowsHide: true });
@@ -282,7 +283,7 @@ async function main(): Promise<void> {
   }
   if (action === "api") {
     const apiUrl = args.shift();
-    if (!apiUrl || !/^https?:\/\//.test(apiUrl)) throw new Error("Usage: lazycat api http://localhost:8787");
+    if (!apiUrl || !/^https?:\/\//.test(apiUrl)) throw new Error("Usage: lazycat api https://your-api.example.com");
     writeConfig({ ...readConfig(), apiUrl });
     console.log(`API saved: ${apiUrl}`);
     return;
