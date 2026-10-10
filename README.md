@@ -1,274 +1,256 @@
-# LazyCat: Attention Rewards for Monad
+# LazyCat
 
-Testnet-only hackathon demo. VS Code extension displays sponsor-style devtool placements beside Claude Code, Codex, Gemini CLI, aider, and other terminal agents. Focused agent time earns capped testnet MON. User claims through an EIP-712 voucher and `EarnEscrow`; contract is payout authority.
+## Project goals
 
-Included Cursor, Sentry, Supabase, Vercel, and Raycast creatives are original demo placements, not paid endorsements or partnership claims.
+- Create a developer-focused rewards loop that converts active AI-agent work into capped Monad testnet rewards.
+- Keep the product transparent: the system measures visible workspace and terminal signals, not hidden model reasoning.
+- Build a working demo across extension, backend, web app, and smart contract with a realistic end-to-end flow.
+- Demonstrate how attention, focus, and time spent with terminal agents can be represented as a verifiable on-chain claim.
 
-## Honest product boundary
+## Product overview
 
-Ads do **not** appear inside model output or hidden "thinking". VS Code APIs cannot read LLM tokens or private reasoning. Extension shows ads in VS Code status bar and sidebar. Earning signal uses window focus, active terminal, agent process tree, and optional CPU activity. Extension never reads prompts or terminal content. A determined client can fake signals; on-chain replay, amount, daily-value, and daily-ad caps remain enforced.
+LazyCat is a testnet-only hackathon project for rewarding focused developer time spent using AI coding agents such as Codex, Claude, Gemini CLI, aider, and similar terminal-based tools.
 
-## Rules
+The system is designed around a simple principle:
 
-- Monad testnet only, chain ID `10143`
-- 20 ads/day, 6 ads/hour, 10-second cooldown
-- 0.05 MON/ad, 1 MON/day
-- Contract accepts one claim per signed nonce and max 20 claims/day
-- Static demo sponsor; no mainnet, custodial balances, token economics, or real ad marketplace
+- the VS Code extension detects active agent usage and focus state,
+- the backend records capped earnings per wallet and day,
+- the web app lets the user connect a wallet and claim,
+- the smart contract verifies the signed voucher and pays out testnet MON.
 
-## Requirements
+The project intentionally avoids any hidden prompt extraction or private reasoning access. It uses visible signals only and relies on on-chain enforcement for replay protection and spend limits.
 
-Bun 1.3+, Foundry, MetaMask, testnet MON. Windows extension debugging needs VS Code. Monad testnet RPC currently responds at `https://testnet-rpc.monad.xyz` with chain ID `10143`; confirm current faucet and explorer details from official Monad docs before deployment.
+## Architecture
 
-## Install
+### Components
 
-```powershell
+- Extension layer
+  - Watches VS Code window focus, active terminal, agent process tree, and optional CPU activity.
+  - Displays the ad panel and status bar for the user experience.
+  - Emits the earning signal used by the backend.
+
+- Backend layer
+  - Runs a Bun + Hono API.
+  - Stores daily wallet metrics in SQLite.
+  - Validates wallet, caps, limits, and cooldowns.
+  - Creates signed EIP-712 voucher claims.
+  - Logs suspicious or abusive attempts.
+
+- Shared rules layer
+  - Centralizes chain settings, reward values, and caps.
+  - Ensures consistent configuration across backend, frontend, and contracts.
+
+- Web app layer
+  - Connects the wallet.
+  - Displays claim and status information.
+  - Triggers the claim flow against the deployed contract.
+
+- Smart contract layer
+  - Enforces claim validity, nonce replay protection, cap checks, and payout execution.
+  - Acts as the final source of truth for payout authorization.
+
+- CLI layer
+  - Wraps terminal agents with a lightweight sponsor-style interface.
+  - Keeps the development workflow familiar while exposing the reward loop.
+
+## Runtime flow
+
+- The user opens VS Code and starts a supported terminal agent.
+- The extension polls the active terminal and process tree.
+- If the environment meets the focus and activity conditions, the system marks the session as earning.
+- The CLI or extension sends a heartbeat to the backend using the wallet address.
+- The backend validates rate limits, per-hour caps, and daily caps.
+- The backend increments the wallet’s earned balance for the current day.
+- When the user clicks claim, the backend creates an EIP-712 voucher using a signer key.
+- The frontend submits the claim to the deployed contract with amount, nonce, day, and signature.
+- The contract verifies the signer and the payload, then sends testnet MON to the wallet.
+
+## Contract roles
+
+### EarnEscrow
+
+- Owns the payout logic and final verification for claims.
+- Stores immutable daily cap and max ads-per-day values.
+- Tracks claimed amounts by wallet and day.
+- Tracks used nonces to prevent replay attacks.
+- Verifies the signer address recovered from the EIP-712 signature.
+- Transfers the payout to the caller only after all checks pass.
+
+### Voucher signer
+
+- A dedicated private key controlled by the backend operator.
+- Signs claim vouchers to authorize payout requests.
+- Must match the signer address configured in the contract.
+- Must never be exposed in the browser, client app, or public repository.
+
+### Wallet owner
+
+- Connects MetaMask or a supported wallet.
+- Sends claim requests against the contract.
+- Receives the payout if the claim is valid and within system caps.
+
+## Repo structure
+
+- backend/
+  - Hono-based API server
+  - SQLite persistence
+  - reward accounting and claim generation
+
+- web/
+  - React + Vite frontend
+  - wallet connection and claim dashboard
+
+- extension/
+  - VS Code extension
+  - focus tracking and ad panel integration
+
+- cli/
+  - terminal wrapper for coding agents
+  - sponsor-style TUI experience
+
+- shared/
+  - shared configuration and EIP-712 typing code
+
+- contracts/
+  - Foundry smart contract project
+  - payout logic and test suite
+
+- scripts/
+  - helper scripts for validation and replay tests
+
+## Core features
+
+- Focus-based earning logic for terminal agent work
+- Per-wallet daily reward accounting in SQLite
+- Hard caps for count and value exposure
+- EIP-712 claim signatures for verifiable authorization
+- On-chain claim enforcement through EarnEscrow
+- VS Code status bar and sidebar experience
+- Terminal wrapper for AI coding workflows
+- Anti-abuse logging for fraud and replay attempts
+- Monad testnet compatibility with developer-friendly deployment flow
+
+## Tech stack
+
+- Frontend: React, Vite, TypeScript
+- Backend: Bun, Hono, SQLite
+- Smart contract: Solidity, Foundry, OpenZeppelin
+- Wallet and chain integration: viem, wagmi
+- Extension: VS Code API
+- TUI tooling: Node PTY
+- Security model: EIP-712, nonce replay protection, signer validation
+
+## Quick start
+
+### Install dependencies
+
+```bash
 bun install
-Copy-Item backend\.env.example backend\.env
-Copy-Item web\.env.example web\.env
 ```
 
-Edit env files. Never put private keys in web or extension env. `VOUCHER_SIGNER_KEY` must match deployed contract signer. `CONTRACT_ADDRESS` must be deployed address.
+### Create environment files
 
-## Contract
-
-Install OpenZeppelin and forge standard library:
-
-```powershell
-cd contracts
-forge install OpenZeppelin/openzeppelin-contracts --no-commit
-forge install foundry-rs/forge-std --no-commit
-forge test
+```bash
+Copy-Item backend/.env.example backend/.env
+Copy-Item web/.env.example web/.env
 ```
 
-Deploy:
+### Start local services
 
-```powershell
-$env:PRIVATE_KEY="0x..."
-$env:VOUCHER_SIGNER="0x..."
-$env:DAILY_CAP="1000000000000000000"
-$env:MAX_ADS_PER_DAY="20"
-$env:MONAD_RPC_URL="https://testnet-rpc.monad.xyz"
-forge script script/Deploy.s.sol:Deploy --rpc-url $env:MONAD_RPC_URL --broadcast --legacy
-```
-
-Fund deployed escrow with testnet MON. Copy address into backend `.env` and web `.env`.
-
-Deployment secrets stay local. Never paste private keys into chat, source code, frontend env, or Git:
-
-```powershell
-$env:PRIVATE_KEY="0x<deployer-key>"
-$env:VOUCHER_SIGNER="0x<signer-address>"
-$env:DAILY_CAP="1000000000000000000"
-$env:MAX_ADS_PER_DAY="20"
-$env:MONAD_RPC_URL="https://testnet-rpc.monad.xyz"
-forge script script/Deploy.s.sol:Deploy --rpc-url $env:MONAD_RPC_URL --broadcast --legacy
-```
-
-## Run
-
-Terminal 1:
-
-```powershell
+```bash
 bun run dev:backend
-```
-
-Terminal 2:
-
-```powershell
 bun run dev:web
 ```
 
-Extension:
+### Run the extension
 
-```powershell
-cd extension
-bun install
-bun run typecheck
-bun run build
-```
+- Open the extension folder in VS Code
+- Press F5 to launch the Extension Development Host
+- Start a supported agent in the integrated terminal
+- Keep the LazyCat panel visible to enable the earning flow
 
-Open `extension` in VS Code, press F5, start `claude` or `codex` in integrated terminal, open LazyCat sidebar. Status bar displays detection. Keep panel visible for earning. Web app connects wallet and handles claim.
+## Environment setup
 
-## CLI TUI prototype
+### Backend environment
 
-For Claude Code, Codex CLI, and similar terminal agents, use the PTY wrapper. It launches the real agent, forwards keyboard input, preserves its TUI, and paints a rotating sponsored line on the terminal's bottom row:
+Required variables in backend/.env:
 
-```powershell
-cd cli
-bun install
-bun run build
-node dist/cli.js codex
-```
+- PORT=8787
+- DB_PATH=./data/lazycat.db
+- ALLOWED_ORIGIN=http://localhost:5173
+- VOUCHER_SIGNER_KEY=0x...
+- CONTRACT_ADDRESS=0x...
+- CHAIN_ID=10143
+- DAILY_CAP_WEI=1000000000000000000
+- REWARD_PER_AD_WEI=50000000000000000
+- MAX_ADS_PER_DAY=20
+- MAX_ADS_PER_HOUR=6
+- ADMIN_TOKEN=replace-with-long-random-token
 
-Examples:
+### Web environment
 
-```powershell
-node dist/cli.js claude
-node dist/cli.js codex --help
-```
+Required variables in web/.env:
 
-Optional wallet heartbeat:
+- VITE_API_URL=http://localhost:8787
+- VITE_CONTRACT_ADDRESS=0x...
+- VITE_CHAIN_ID=10143
+- VITE_RPC_URL=https://testnet-rpc.monad.xyz
+- VITE_EXPLORER_URL=https://testnet.monadvision.com
 
-```powershell
-$env:LAZY_CAT_WALLET="0xYourWallet"
-node dist/cli.js codex
-```
+### Contract environment
 
-### One-time CLI setup
+Required values for contracts deployment:
 
-The CLI can permanently wrap normal `codex` and `claude` commands in PowerShell. It adds a marked block to the PowerShell profile; it does not replace binaries or read prompts.
+- PRIVATE_KEY=0x...
+- VOUCHER_SIGNER=0x...
+- DAILY_CAP=1000000000000000000
+- MAX_ADS_PER_DAY=20
+- MONAD_RPC_URL=https://testnet-rpc.monad.xyz
 
-From this repository:
+Important:
 
-```powershell
-cd D:\Study\hackathons\monadBlitz2\lazycat
-bun run --cwd cli build
-node cli\dist\cli.js setup
-node cli\dist\cli.js wallet 0xYourWallet
-node cli\dist\cli.js doctor
-. $PROFILE
-```
+- Never store private keys in frontend or browser code.
+- Never commit secrets to Git.
+- The contract signer key must match the backend signer key exactly.
 
-After setup, normal commands automatically show LazyCat:
+## Documentation
 
-```powershell
-codex
-claude
-```
+- README.md
+  - project overview and operational guide
+- backend/src/index.ts
+  - server orchestration and reward rules
+- shared/src/rules.ts
+  - chain ID, caps, and reward constants
+- shared/src/eip712.ts
+  - typed claim message definition
+- contracts/src/EarnEscrow.sol
+  - on-chain payout and verification logic
+- extension/src/focus.ts
+  - focus detection and earning state evaluation
+- cli/src/cli.ts
+  - agent wrapper and sponsor-style UI
 
-Run the original CLI without the ad wrapper:
+## Current scope
 
-```powershell
-lazycat passthrough codex
-lazycat passthrough claude
-```
+This project is currently scoped as a Monad testnet-only hackathon demo.
 
-Disable or re-enable automatic wrapping:
+- Testnet only
+- Static sponsor-style UX
+- Local or hosted backend deployment
+- Wallet-based claiming flow
+- No custodial balance management
+- No real mainnet token economics
+- No claim without deployed contract and valid signer setup
 
-```powershell
-lazycat disable
-lazycat enable
-```
+## Security boundaries
 
-For the published package, the same flow starts with:
+- The extension does not read prompts or hidden model output.
+- Earning checks rely on visible app state and terminal activity.
+- Ongoing abuse protection comes from backend validation and contract-level replay protection.
+- The wallet signature and signer key are never exposed to the browser app.
 
-```powershell
-npm install -g lazycat-cli
-lazycat setup
-lazycat wallet 0xYourWallet
-```
+## Summary
 
-`lazycat setup` asks for consent before changing the profile. `lazycat doctor` checks installed agents, wallet configuration, backend URL, and profile state.
+LazyCat is a proof-of-concept system that links developer attention, AI-agent activity, and on-chain reward claims. It is intentionally built as a testnet demo with transparent boundaries, explicit caps, and enforceable payout rules on Monad.
 
-GitHub source install now uses the deployed demo API by default:
-
-```powershell
-npm install -g https://github.com/kohesee/lazycat.git
-lazycat setup
-lazycat wallet 0xYourWallet
-. $PROFILE
-codex
-```
-
-No backend command is needed. The CLI sends heartbeats to `https://lazycat-api.onrender.com`, already deployed on Monad testnet. Override API only when using your own deployment:
-
-```powershell
-lazycat api https://your-lazycat-api.example.com
-```
-
-The npm/GitHub package never contains the voucher signer private key. It stores only wallet address and public API URL.
-
-### GitHub one-stop install
-
-GitHub source install uses the same package entry point and TUI as the npm package. It builds the CLI during install; no Bun, backend checkout, or separate web server is needed for the wrapper itself:
-
-```powershell
-npm install -g https://github.com/kohesee/lazycat.git
-lazycat setup
-lazycat wallet 0xYourWallet
-lazycat api https://your-hosted-lazycat-api.example.com
-lazycat web https://your-hosted-lazycat-web.example.com
-lazycat doctor
-. $PROFILE
-```
-
-Then ordinary commands launch through LazyCat:
-
-```powershell
-codex
-claude
-```
-
-The TUI reserves two bottom rows: one for the sponsor creative and one for live state:
-
-```text
-LAZYCAT · earning API online · 0.05 MON earned · 1 ads · claim: https://...
-◇ SENTRY / SHIP WITH CONFIDENCE ...
-```
-
-`lazycat claim` opens the configured web claim page. The TUI never stores a private key and cannot sign a wallet claim by itself.
-
-The repository package defaults to `http://localhost:8787` because no public API is bundled. To meet the true “install once, no backend” demo promise, deploy the backend and web app and pass those public URLs during setup. Never expose `VOUCHER_SIGNER_KEY` in this package.
-
-### Fast API hosting on Render
-
-This repository includes [`render.yaml`](./render.yaml) and [`Dockerfile`](./Dockerfile). Render must use Docker because backend uses `bun:sqlite`; do not select a native Node runtime.
-
-1. Push repository to GitHub.
-2. Open Render, choose **New + > Blueprint**, select `kohesee/lazycat`, and apply `render.yaml`.
-3. Set `ALLOWED_ORIGIN` to your deployed web URL, for example `https://lazycat-web.onrender.com`.
-4. Set `VOUCHER_SIGNER_KEY` to the private key whose address is the deployed contract signer. Paste it only in Render's secret environment variable field.
-5. Deploy. Test:
-
-```powershell
-curl https://YOUR-API.onrender.com/health
-```
-
-Expected response:
-
-```json
-{"ok":true,"chainId":10143}
-```
-
-Then configure clients:
-
-```powershell
-lazycat api https://YOUR-API.onrender.com
-lazycat web https://YOUR-WEB.onrender.com/#pit-stop
-```
-
-Render's free service can sleep and has ephemeral storage, so SQLite counters can reset after restart. This is acceptable for a short hackathon demo, not production. Never put `VOUCHER_SIGNER_KEY` in GitHub, web env, CLI config, or browser code.
-
-### Judging evidence
-
-- **Monad usage:** deployed `EarnEscrow` contract on Monad testnet, chain ID `10143`; voucher claims emit on-chain `Claimed` events.
-- **Working product:** web claim dashboard, VS Code companion panel, and terminal PTY wrapper share the same capped reward API.
-- **User experience:** one-time `lazycat setup` wraps normal `codex` and `claude` commands; TUI shows sponsor creative, ad count, earned MON, claimable MON, wallet, API state, and claim URL.
-- **Security:** EIP-712 signer recovery, nonce replay protection, wallet validation, cooldown, hourly/day ad caps, daily MON cap, pause, reentrancy guard, fraud log, and no client private keys.
-- **Transparency:** sponsor creatives are demo placements, not paid partnerships; ads never read prompts, model output, or private reasoning.
-- **Reproducibility:** GitHub install builds the CLI from source and packages the same launcher path used by npm.
-
-The linked Notion rubric was not machine-readable during preparation. Criteria above are verifiable project evidence, not invented claims about unavailable rubric text.
-
-This is terminal rendering, not model-output injection. ANSI/TUI redraw behavior varies by agent and terminal. If banner flickers, use the VS Code `Agent Rewards` editor-side companion view instead:
-
-```text
-Ctrl+Shift+P
-LazyCat: Open Ad Beside Agent
-```
-
-For Copilot/Codex VS Code webviews, editor-side companion is closest supported integration; external extensions cannot write inside another extension's private webview.
-
-## Security notes
-
-Contract uses EIP-712 domain separation, signer recovery, per-wallet nonce replay protection, immutable daily value/ad caps, pause, reentrancy guard, and pull payout. Backend uses prepared SQLite statements, wallet validation, rate limits, fraud log, CORS allowlist, and timing-safe admin token comparison. Backend pending balances need reconciliation if a user rejects a transaction; for hackathon demo, restart with a new day or manually reconcile DB before reuse.
-
-## Demo
-
-1. Connect MetaMask to Monad testnet.
-2. View sponsored slot until status rises.
-3. Click Claim and approve transaction.
-4. Open explorer link and show `Claimed`.
-5. Submit same voucher twice with `scripts/replay-attack.ts`; second attempt reverts `nonce used`.
-6. Query `GET /admin/fraud-log` with `x-admin-token`.
+It is organized as a multi-layer product: extension for signal capture, backend for accounting, frontend for claims, and contract for secure payout execution.
