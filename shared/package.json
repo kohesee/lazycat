@@ -1,0 +1,10 @@
+{
+  "name": "@kickbacks/shared",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./rules": "./src/rules.ts",
+    "./eip712": "./src/eip712.ts"
+  }
+}

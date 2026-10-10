@@ -1,0 +1,17 @@
+node_modules/
+dist/
+out/
+.env
+.env.*
+!.env.example
+data/
+*.db
+*.db-shm
+*.db-wal
+contracts/lib/
+contracts/cache/
+contracts/broadcast/
+web/dist/
+extension/*.vsix
+extension/node_modules/
+extension/dist/

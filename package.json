@@ -1,0 +1,24 @@
+{
+  "name": "kickbacks-monad",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Kickbacks - attention-gated testnet MON rewards for AI coding agent thinking time.",
+  "workspaces": [
+    "shared",
+    "backend",
+    "web",
+    "extension"
+  ],
+  "scripts": {
+    "dev:backend": "bun run --cwd backend dev",
+    "dev:web": "bun run --cwd web dev",
+    "build:backend": "bun run --cwd backend build",
+    "build:web": "bun run --cwd web build",
+    "build:extension": "bun run --cwd extension build",
+    "typecheck": "bun run --cwd backend typecheck && bun run --cwd web typecheck && bun run --cwd extension typecheck",
+    "replay-attack": "bunx tsx scripts/replay-attack.ts"
+  },
+  "engines": {
+    "node": ">=22.5.0"
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "name": "monadwatch-proto",
+  "displayName": "MonadWatch Proto",
+  "description": "Throwaway probe: focus + agent process detection for attention-gated ad credits.",
+  "version": "0.0.1",
+  "private": true,
+  "publisher": "monadblitz",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": ["Other"],
+  "main": "./dist/extension.js",
+  "activationEvents": ["onStartupFinished"],
+  "contributes": {
+    "commands": [
+      { "command": "monadwatch.showSignals", "title": "MonadWatch: Show Signal State" },
+      { "command": "monadwatch.probeProcesses", "title": "MonadWatch: Probe Process Tree" }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "monadwatch-proto",
+          "title": "MonadWatch",
+          "icon": "media/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "monadwatch-proto": [
+        {
+          "type": "webview",
+          "id": "monadwatch.signals",
+          "name": "Ad Slot"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "MonadWatch",
+      "properties": {
+        "monadwatch.agentPatterns": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": ["claude", "codex", "gemini", "aider", "opencode", "crush", "qwen"],
+          "description": "Process name/command-line substrings treated as AI agents."
+        },
+        "monadwatch.cpuThinkingThreshold": {
+          "type": "number",
+          "default": 3,
+          "description": "Agent CPU percent at or above this counts as activity."
+        },
+        "monadwatch.requireCpuForThinking": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, dwell only ticks while the agent process burns CPU."
+        },
+        "monadwatch.pollSeconds": {
+          "type": "number",
+          "default": 2,
+          "description": "Signal poll interval in seconds."
+        },
+        "monadwatch.requirePanelVisible": {
+          "type": "boolean",
+          "default": true,
+          "description": "When true, dwell only ticks while the ad panel is visible."
+        },
+        "monadwatch.requireAgentInActiveTerminal": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, the agent process must be a descendant of the active terminal."
+        },
+        "monadwatch.dwellTickSeconds": {
+          "type": "number",
+          "default": 5,
+          "description": "Seconds of continuous attention credited per tick."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "node esbuild.mjs",
+    "watch": "node esbuild.mjs --watch",
+    "typecheck": "tsc --noEmit",
+    "package": "vsce package --no-dependencies"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "@types/vscode": "^1.90.0",
+    "esbuild": "^0.23.0",
+    "typescript": "^5.5.0"
+  }
+}
