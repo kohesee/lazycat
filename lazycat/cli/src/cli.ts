@@ -22,6 +22,7 @@ const adLines = [
 let adIndex = 0;
 let lastHeartbeat = 0;
 let stopped = false;
+let childExited = false;
 
 function drawAd(): void {
   if (stopped) return;
@@ -54,21 +55,48 @@ const child = pty.spawn(shell, shellArgs, {
   env: { ...process.env, TERM: "xterm-256color" } as Record<string, string>,
 });
 
+type WindowsPtyInternals = {
+  _agent?: {
+    inSocket?: NodeJS.EventEmitter;
+  };
+};
+const inputSocket = (child as unknown as WindowsPtyInternals)._agent?.inSocket;
+if (inputSocket) {
+  inputSocket.on("error", (error: NodeJS.ErrnoException) => {
+    if (error.code !== "ERR_SOCKET_CLOSED") {
+      console.error("PTY input socket error:", error);
+    }
+  });
+}
+
 process.stdin.setRawMode?.(true);
 process.stdin.resume();
-process.stdin.on("data", (data) => child.write(data.toString()));
+const forwardInput = (data: Buffer): void => {
+  if (stopped || childExited) return;
+  try {
+    child.write(data.toString());
+  } catch {
+    // The child can exit between the guard and write on Windows.
+  }
+};
+process.stdin.on("data", forwardInput);
 child.onData((data) => {
+  if (stopped) return;
   process.stdout.write(data);
-  drawAd();
   void heartbeat();
 });
 child.onExit(({ exitCode }) => {
+  if (childExited) return;
+  childExited = true;
   stopped = true;
+  process.stdin.removeListener("data", forwardInput);
+  process.stdin.pause();
   process.stdin.setRawMode?.(false);
   process.stdout.write("\x1b[0m\x1b[?25h\n");
   process.exit(exitCode);
 });
 process.stdout.on("resize", () => {
+  if (stopped || childExited) return;
   child.resize(process.stdout.columns || 120, process.stdout.rows || 30);
   drawAd();
 });

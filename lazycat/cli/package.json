@@ -8,6 +8,7 @@
   },
   "scripts": {
     "build": "tsup src/cli.ts --format esm --platform node --target node20 --out-dir dist",
+    "run": "node dist/cli.js",
     "dev": "tsx src/cli.ts",
     "typecheck": "tsc --noEmit"
   },

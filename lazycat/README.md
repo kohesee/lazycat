@@ -96,21 +96,21 @@ For Claude Code, Codex CLI, and similar terminal agents, use the PTY wrapper. It
 cd cli
 bun install
 bun run build
-bun run dist/cli.js codex
+node dist/cli.js codex
 ```
 
 Examples:
 
 ```powershell
-bun run dist/cli.js claude
-bun run dist/cli.js codex --help
+node dist/cli.js claude
+node dist/cli.js codex --help
 ```
 
 Optional wallet heartbeat:
 
 ```powershell
 $env:KICKBACKS_WALLET="0xYourWallet"
-bun run dist/cli.js codex
+node dist/cli.js codex
 ```
 
 This is terminal rendering, not model-output injection. ANSI/TUI redraw behavior varies by agent and terminal. If banner flickers, use the VS Code `Agent Rewards` editor-side companion view instead:
