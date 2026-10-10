@@ -15,7 +15,7 @@ import {
 import { injected } from "wagmi/connectors";
 import { monadTestnet } from "viem/chains";
 import { parseAbi, formatEther } from "viem";
-import { RULES } from "../../shared/src/rules";
+import { RULES } from "./rules";
 import catLogo from "../../assets/Pixelated Purple Cat Smile.png";
 import "./style.css";
 
