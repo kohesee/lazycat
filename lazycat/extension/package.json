@@ -13,14 +13,27 @@
   "activationEvents": ["onStartupFinished"],
   "contributes": {
     "commands": [
-      { "command": "monadwatch.showSignals", "title": "MonadWatch: Show Signal State" },
-      { "command": "monadwatch.probeProcesses", "title": "MonadWatch: Probe Process Tree" }
+      {
+        "command": "monadwatch.showSignals",
+        "title": "MonadWatch: Show Signal State"
+      },
+      {
+        "command": "monadwatch.probeProcesses",
+        "title": "MonadWatch: Probe Process Tree"
+      }
     ],
     "viewsContainers": {
       "activitybar": [
         {
           "id": "monadwatch-proto",
           "title": "MonadWatch",
+          "icon": "media/icon.svg"
+        }
+      ],
+      "panel": [
+        {
+          "id": "kickbacks-agent-panel",
+          "title": "Agent Rewards",
           "icon": "media/icon.svg"
         }
       ]
@@ -32,6 +45,13 @@
           "id": "monadwatch.signals",
           "name": "Ad Slot"
         }
+      ],
+      "kickbacks-agent-panel": [
+        {
+          "type": "webview",
+          "id": "kickbacks.agentRewards",
+          "name": "Codex / Claude Rewards"
+        }
       ]
     },
     "configuration": {
@@ -39,7 +59,9 @@
       "properties": {
         "monadwatch.agentPatterns": {
           "type": "array",
-          "items": { "type": "string" },
+          "items": {
+            "type": "string"
+          },
           "default": ["claude", "codex", "gemini", "aider", "opencode", "crush", "qwen"],
           "description": "Process name/command-line substrings treated as AI agents."
         },
@@ -85,6 +107,7 @@
   "devDependencies": {
     "@types/node": "^20.14.0",
     "@types/vscode": "^1.90.0",
+    "@vscode/vsce": "2.26.1",
     "esbuild": "^0.23.0",
     "typescript": "^5.5.0"
   }

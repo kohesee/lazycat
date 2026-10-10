@@ -18,6 +18,9 @@ export function activate(context: vscode.ExtensionContext): void {
     vscode.window.registerWebviewViewProvider(AdPanelProvider.viewId, adPanel, {
       webviewOptions: { retainContextWhenHidden: true },
     }),
+    vscode.window.registerWebviewViewProvider(AdPanelProvider.panelViewId, adPanel, {
+      webviewOptions: { retainContextWhenHidden: true },
+    }),
     vscode.commands.registerCommand('monadwatch.showSignals', () => {
       const signals = tracker?.getState();
       void vscode.window.showInformationMessage(

@@ -12,10 +12,11 @@ function makeNonce(): string {
 
 export class AdPanelProvider implements vscode.WebviewViewProvider, vscode.Disposable {
   static readonly viewId = 'monadwatch.signals';
+  static readonly panelViewId = 'kickbacks.agentRewards';
 
-  private view: vscode.WebviewView | undefined;
+  private readonly views = new Set<vscode.WebviewView>();
   private readonly subscription: vscode.Disposable;
-  private readonly viewDisposables: vscode.Disposable[] = [];
+  private readonly viewDisposables = new Map<vscode.WebviewView, vscode.Disposable[]>();
 
   constructor(
     private readonly extensionUri: vscode.Uri,
@@ -26,7 +27,9 @@ export class AdPanelProvider implements vscode.WebviewViewProvider, vscode.Dispo
 
   dispose(): void {
     this.subscription.dispose();
-    this.disposeView();
+    for (const view of this.views) {
+      this.disposeView(view);
+    }
   }
 
   resolveWebviewView(
@@ -34,41 +37,44 @@ export class AdPanelProvider implements vscode.WebviewViewProvider, vscode.Dispo
     _context: vscode.WebviewViewResolveContext,
     _token: vscode.CancellationToken,
   ): void {
-    this.view = webviewView;
+    this.views.add(webviewView);
     webviewView.webview.options = {
       enableScripts: true,
       localResourceRoots: [this.extensionUri],
     };
     webviewView.webview.html = this.renderHtml(webviewView.webview, makeNonce());
 
-    this.viewDisposables.push(
+    const disposables = [
       webviewView.onDidChangeVisibility(() => {
-        this.tracker.setAdPanelVisible(webviewView.visible);
+        this.tracker.setAdPanelVisible([...this.views].some((view) => view.visible));
       }),
       webviewView.onDidDispose(() => {
-        this.tracker.setAdPanelVisible(false);
-        this.disposeView();
+        this.disposeView(webviewView);
+        this.tracker.setAdPanelVisible([...this.views].some((view) => view.visible));
       }),
       webviewView.webview.onDidReceiveMessage((message: { type?: string }) => {
         if (message.type === 'ready') {
           this.post(this.tracker.getState());
         }
       }),
-    );
+    ];
+    this.viewDisposables.set(webviewView, disposables);
 
-    this.tracker.setAdPanelVisible(webviewView.visible);
+    this.tracker.setAdPanelVisible([...this.views].some((view) => view.visible));
   }
 
-  private disposeView(): void {
-    for (const disposable of this.viewDisposables) {
+  private disposeView(view: vscode.WebviewView): void {
+    for (const disposable of this.viewDisposables.get(view) ?? []) {
       disposable.dispose();
     }
-    this.viewDisposables.length = 0;
-    this.view = undefined;
+    this.viewDisposables.delete(view);
+    this.views.delete(view);
   }
 
   private post(signals: Signals): void {
-    void this.view?.webview.postMessage({ type: 'signals', payload: signals });
+    for (const view of this.views) {
+      void view.webview.postMessage({ type: 'signals', payload: signals });
+    }
   }
 
   private renderHtml(webview: vscode.Webview, nonce: string): string {
