@@ -9,7 +9,7 @@ import pty from "node-pty";
 
 const agents = ["codex", "claude", "gemini", "aider", "opencode", "crush", "qwen"] as const;
 type Agent = (typeof agents)[number];
-type Config = { wallet?: string; apiUrl?: string; enabled?: boolean };
+type Config = { wallet?: string; apiUrl?: string; webUrl?: string; enabled?: boolean };
 
 const configDir = process.platform === "win32"
   ? path.join(process.env.APPDATA ?? path.join(os.homedir(), "AppData", "Roaming"), "lazycat")
@@ -56,35 +56,82 @@ const adLines = [
   "  ▣ RAYCAST  /  COMMAND YOUR TOOLS Your shortcuts, workflows, and dev life       ",
 ];
 
+function formatMon(wei: string | number | undefined): string {
+  try {
+    const value = BigInt(wei ?? 0);
+    const whole = value / 1_000_000_000_000_000_000n;
+    const fraction = (value % 1_000_000_000_000_000_000n).toString().padStart(18, "0").slice(0, 2);
+    return `${whole}.${fraction}`;
+  } catch {
+    return "0.00";
+  }
+}
+
 async function runAgent(agent: Agent, args: string[]): Promise<never> {
   const config = readConfig();
   const apiUrl = process.env.LAZY_CAT_API_URL ?? config.apiUrl ?? "http://localhost:8787";
   const wallet = process.env.LAZY_CAT_WALLET ?? config.wallet;
+  const webUrl = process.env.LAZY_CAT_WEB_URL ?? config.webUrl ?? "http://localhost:5173/#pit-stop";
   const intervalMs = 30_000;
   let adIndex = 0;
   let lastHeartbeat = 0;
+  let lastStatusRefresh = 0;
   let stopped = false;
   let childExited = false;
+  let apiState = wallet ? "checking API" : "set wallet with lazycat wallet";
+  let views = 0;
+  let earned = "0.00";
+  let pending = "0.00";
 
   function drawAd(): void {
     if (stopped) return;
     const width = terminalWidth();
     const text = (adLines[adIndex++ % adLines.length] ?? "").slice(0, Math.max(1, width - 1));
-    process.stdout.write(`\x1b7\x1b[${terminalRows()};1H\x1b[2K\x1b[48;5;22m\x1b[38;5;255m${text.padEnd(Math.max(1, width - 1))}\x1b[0m\x1b8`);
+    const rows = terminalRows();
+    const status = `  LAZYCAT  ·  ${apiState}  ·  ${earned} MON earned  ·  ${pending} claimable  ·  ${views} ads  ·  claim: ${webUrl}`;
+    process.stdout.write(
+      `\x1b7\x1b[${Math.max(1, rows - 1)};1H\x1b[2K\x1b[48;5;236m\x1b[38;5;255m${status.slice(0, Math.max(1, width - 1)).padEnd(Math.max(1, width - 1))}\x1b[0m` +
+      `\x1b[${rows};1H\x1b[2K\x1b[48;5;22m\x1b[38;5;255m${text.padEnd(Math.max(1, width - 1))}\x1b[0m\x1b8`,
+    );
+  }
+
+  async function refreshStatus(): Promise<void> {
+    if (Date.now() - lastStatusRefresh < intervalMs) return;
+    lastStatusRefresh = Date.now();
+    if (!wallet) {
+      apiState = "wallet not configured";
+      return;
+    }
+    try {
+      const response = await fetch(`${apiUrl}/status?wallet=${encodeURIComponent(wallet)}`);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const status = await response.json() as { earnedToday?: string; pending?: string; views?: number };
+      earned = formatMon(status.earnedToday);
+      pending = formatMon(status.pending);
+      views = status.views ?? 0;
+      apiState = "earning API online";
+    } catch {
+      apiState = "API offline · ads visual only";
+    }
+    drawAd();
   }
 
   async function heartbeat(): Promise<void> {
     if (!wallet || Date.now() - lastHeartbeat < intervalMs) return;
     lastHeartbeat = Date.now();
     try {
-      await fetch(`${apiUrl}/view`, {
+      const response = await fetch(`${apiUrl}/view`, {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ wallet }),
       });
+      if (response.ok) apiState = "earning API online";
+      else if (response.status === 429) apiState = "cooldown/cap applied";
+      else apiState = `API rejected · HTTP ${response.status}`;
     } catch {
-      // Agent remains usable when backend is offline.
+      apiState = "API offline · ads visual only";
     }
+    await refreshStatus();
   }
 
   const shell = process.platform === "win32" ? "powershell.exe" : process.env.SHELL || "sh";
@@ -134,6 +181,7 @@ async function runAgent(agent: Agent, args: string[]): Promise<never> {
     if (stopped || childExited) return;
     child.resize(terminalWidth(), Math.max(2, terminalRows() - 1));
     drawAd();
+    void refreshStatus();
   });
   drawAd();
   const timer = setInterval(() => {
@@ -211,6 +259,13 @@ function doctor(): void {
   console.log(`PowerShell profile: ${existsSync(profilePath) ? profilePath : "missing (run lazycat setup)"}`);
 }
 
+function openClaimPage(): void {
+  const url = readConfig().webUrl ?? "http://localhost:5173/#pit-stop";
+  if (process.platform === "win32") execFileSync("cmd.exe", ["/c", "start", "", url], { stdio: "ignore" });
+  else execFileSync("open", [url], { stdio: "ignore" });
+  console.log(`Opened claim page: ${url}`);
+}
+
 async function main(): Promise<void> {
   const args = process.argv.slice(2);
   const action = args.shift();
@@ -230,6 +285,17 @@ async function main(): Promise<void> {
     if (!apiUrl || !/^https?:\/\//.test(apiUrl)) throw new Error("Usage: lazycat api http://localhost:8787");
     writeConfig({ ...readConfig(), apiUrl });
     console.log(`API saved: ${apiUrl}`);
+    return;
+  }
+  if (action === "web") {
+    const webUrl = args.shift();
+    if (!webUrl || !/^https?:\/\//.test(webUrl)) throw new Error("Usage: lazycat web http://localhost:5173");
+    writeConfig({ ...readConfig(), webUrl });
+    console.log(`Claim page saved: ${webUrl}`);
+    return;
+  }
+  if (action === "claim") {
+    openClaimPage();
     return;
   }
   if (action === "passthrough") {

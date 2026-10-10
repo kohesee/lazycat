@@ -3,6 +3,14 @@
   "version": "0.0.1",
   "private": true,
   "description": "LazyCat - attention-gated testnet MON rewards for AI coding agent thinking time.",
+  "files": [
+    "cli/bin",
+    "cli/dist",
+    "README.md"
+  ],
+  "bin": {
+    "lazycat": "./cli/bin/lazycat.js"
+  },
   "workspaces": [
     "shared",
     "backend",
@@ -19,10 +27,14 @@
     "build:cli": "bun run --cwd cli build",
     "run:cli": "node cli/dist/cli.js",
     "pack:cli": "npm pack ./cli",
+    "prepare": "npm --prefix cli install --ignore-scripts --include=dev && npm --prefix cli run build",
     "typecheck": "bun run --cwd backend typecheck && bun run --cwd web typecheck && bun run --cwd extension typecheck && bun run --cwd cli typecheck",
     "replay-attack": "bunx tsx scripts/replay-attack.ts"
   },
   "engines": {
     "node": ">=22.5.0"
+  },
+  "dependencies": {
+    "node-pty": "^1.1.0"
   }
 }

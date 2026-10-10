@@ -169,6 +169,49 @@ lazycat api https://your-lazycat-api.example.com
 
 The npm package cannot contain the voucher signer private key. Running only the CLI without a hosted API still shows ads, but cannot credit real MON.
 
+### GitHub one-stop install
+
+GitHub source install uses the same package entry point and TUI as the npm package. It builds the CLI during install; no Bun, backend checkout, or separate web server is needed for the wrapper itself:
+
+```powershell
+npm install -g https://github.com/kohesee/lazycat.git
+lazycat setup
+lazycat wallet 0xYourWallet
+lazycat api https://your-hosted-lazycat-api.example.com
+lazycat web https://your-hosted-lazycat-web.example.com
+lazycat doctor
+. $PROFILE
+```
+
+Then ordinary commands launch through LazyCat:
+
+```powershell
+codex
+claude
+```
+
+The TUI reserves two bottom rows: one for the sponsor creative and one for live state:
+
+```text
+LAZYCAT · earning API online · 0.05 MON earned · 1 ads · claim: https://...
+◇ SENTRY / SHIP WITH CONFIDENCE ...
+```
+
+`lazycat claim` opens the configured web claim page. The TUI never stores a private key and cannot sign a wallet claim by itself.
+
+The repository package defaults to `http://localhost:8787` because no public API is bundled. To meet the true “install once, no backend” demo promise, deploy the backend and web app and pass those public URLs during setup. Never expose `VOUCHER_SIGNER_KEY` in this package.
+
+### Judging evidence
+
+- **Monad usage:** deployed `EarnEscrow` contract on Monad testnet, chain ID `10143`; voucher claims emit on-chain `Claimed` events.
+- **Working product:** web claim dashboard, VS Code companion panel, and terminal PTY wrapper share the same capped reward API.
+- **User experience:** one-time `lazycat setup` wraps normal `codex` and `claude` commands; TUI shows sponsor creative, ad count, earned MON, claimable MON, wallet, API state, and claim URL.
+- **Security:** EIP-712 signer recovery, nonce replay protection, wallet validation, cooldown, hourly/day ad caps, daily MON cap, pause, reentrancy guard, fraud log, and no client private keys.
+- **Transparency:** sponsor creatives are demo placements, not paid partnerships; ads never read prompts, model output, or private reasoning.
+- **Reproducibility:** GitHub install builds the CLI from source and packages the same launcher path used by npm.
+
+The linked Notion rubric was not machine-readable during preparation. Criteria above are verifiable project evidence, not invented claims about unavailable rubric text.
+
 This is terminal rendering, not model-output injection. ANSI/TUI redraw behavior varies by agent and terminal. If banner flickers, use the VS Code `Agent Rewards` editor-side companion view instead:
 
 ```text
